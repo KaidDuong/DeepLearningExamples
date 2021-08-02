@@ -13,15 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-docker run -it --rm \
-  --gpus "device=all" \
-  --net=host \
-  --shm-size=1g \
-  --ulimit memlock=-1 \
-  --ulimit stack=67108864 \
-  -e WORKDIR=$(pwd) \
-  -e PYTHONPATH=$(pwd) \
-  -v $(pwd):$(pwd) \
-  -v /mnt/data/triton_data:/mnt/data/triton_data \
-  -w $(pwd) \
-  resnet50:latest bash
+docker build -t resnet50 . -f triton/resnet50/Dockerfile

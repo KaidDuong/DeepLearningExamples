@@ -12,16 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-docker run -it --rm \
-  --gpus "device=all" \
-  --net=host \
-  --shm-size=1g \
-  --ulimit memlock=-1 \
-  --ulimit stack=67108864 \
-  -e WORKDIR=$(pwd) \
-  -e PYTHONPATH=$(pwd) \
-  -v $(pwd):$(pwd) \
-  -v /mnt/data/triton_data:/mnt/data/triton_data \
-  -w $(pwd) \
-  resnet50:latest bash
+# Download checkpoint
+if [ -f "${CHECKPOINT_DIR}/nvidia_resnet50_200821.pth.tar" ]; then
+  echo "Checkpoint already downloaded."
+else
+  echo "Downloading checkpoint ..."
+  wget --content-disposition https://api.ngc.nvidia.com/v2/models/nvidia/resnet50_pyt_amp/versions/20.06.0/zip -O \
+    resnet50_pyt_amp_20.06.0.zip || {
+    echo "ERROR: Failed to download checkpoint from NGC"
+    exit 1
+  }
+  unzip resnet50_pyt_amp_20.06.0.zip -d ${CHECKPOINT_DIR}
+  rm resnet50_pyt_amp_20.06.0.zip
+  echo "ok"
+fi
